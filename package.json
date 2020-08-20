@@ -1,0 +1,16 @@
+{
+  "name": "book-directory",
+  "version": "1.0.0",
+  "description": "- Search good reads via their API\r - Show a list of your books - GET\r - Save books to your \"library\" - POST\r - Update books \"tags?\" - PUT\r - Delete books - DELETE",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1"
+  }
+}
