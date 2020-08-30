@@ -14,9 +14,9 @@
 - Hosting will be on Heroku
 - Need to explore creating the background image with the [canvas module](https://flaviocopes.com/canvas-node-generate-image/)
 - Explore recomending books based on users book selection
-    - Will need to filter out Goodreads tags to find the most relevant ones.
+    - Will need to filter out Goodreads tags to find the most relevant ones
 
-##To-Do
+## To-Do
 - ~~Setup project~~
 - ~~Homepage && Search page route~~
 - ~~Search input~~
