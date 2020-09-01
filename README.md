@@ -20,7 +20,8 @@
 - ~~Setup project~~
 - ~~Homepage && Search page route~~
 - ~~Search input~~
-- Build API search query
+- ~~Build API search query~~
+- Parse query results
 - Display search results on search page
 - Add Goodreads logo to search results page
 - Research Redis

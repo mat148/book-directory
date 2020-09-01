@@ -9,6 +9,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || "3000";
 
+const goodreadsapi = 'https://www.goodreads.com/search/index.xml';
+const goodreadskey = process.env.goodreadskey;
+
 app.use('/public', express.static(path.join(__dirname, '../static')));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -27,9 +30,10 @@ app.get('/search', (req, res)=>{
 
 app.post('/search', (req, res)=>{
     const searchQuery = req.body.searchQuery;
+    //console.log(getQuery(searchQuery));
     //console.log(searchQuery);
-    res.render('search', {data : { searchQuery : searchQuery }});
-    getQuery(searchQuery);
+    //console.log(getQuery(searchQuery));
+    res.render('search', {data : { goodReadsResponse : getQuery(searchQuery), searchQuery : searchQuery }});
     res.end();
 });
 
@@ -40,8 +44,11 @@ app.listen(port, ()=>{
 function getQuery(query) {
     //console.log(query);
     //console.log( process.env.goodreadskey );
-    axios.get('').then(response => {
-        console.log(response.data);
+    //https://www.goodreads.com/search/index.xml?key=b0L0YkqXxrPPmyhgKSJhLw&q=Test
+    const cleanQuery = encodeURI(query);
+    return axios.get( goodreadsapi + '?key=' + goodreadskey + '&q=' + cleanQuery ).then(response => {
+        //console.log(response.data);
+        return response.data;
     }).catch(error => {
         console.log(error);
     });
