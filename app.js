@@ -30,25 +30,48 @@ app.get('/search', (req, res)=>{
 
 app.post('/search', (req, res)=>{
     const searchQuery = req.body.searchQuery;
+    const goodReadsXML = getQuery(searchQuery);
+    res.sendFile(goodReadsXML);
+
+    goodReadsXML.then(function(result) {
+        //console.log(req);
+        res.render('search', {data : { goodReadsResponse : result, searchQuery : searchQuery }});
+        //console.log(req.body);
+        res.end();
+    });
     //console.log(getQuery(searchQuery));
     //console.log(searchQuery);
     //console.log(getQuery(searchQuery));
-    res.render('search', {data : { goodReadsResponse : getQuery(searchQuery), searchQuery : searchQuery }});
-    res.end();
+    //console.log(req.body);
 });
+
+/*axios.get( goodreadsapi + '?key=' + goodreadskey + '&q=' + cleanQuery ).then(response => {
+    //console.log(response.data);
+    //Parse XML data?
+    //console.log(response.xml());
+    return response.data
+}).catch(error => {
+    console.log(error);
+});*/
+
+/*axios.post('/search').then((res) => {
+    console.log(res);
+});*/
 
 app.listen(port, ()=>{
     console.log(`Listening to requests on http://localhost:${port}`);
 });
 
-function getQuery(query) {
+const getQuery = function(query) {
     //console.log(query);
     //console.log( process.env.goodreadskey );
     //https://www.goodreads.com/search/index.xml?key=b0L0YkqXxrPPmyhgKSJhLw&q=Test
     const cleanQuery = encodeURI(query);
     return axios.get( goodreadsapi + '?key=' + goodreadskey + '&q=' + cleanQuery ).then(response => {
         //console.log(response.data);
-        return response.data;
+        //Parse XML data?
+        //console.log(response.xml());
+        return response.data
     }).catch(error => {
         console.log(error);
     });
