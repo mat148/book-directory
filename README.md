@@ -8,7 +8,7 @@
 
 ## Decisions
 - ~~I'm not going to deal with a database at the moment.~~
-- Users "Library" will be saved via Redis and will be deleted within 24 hours.
+- Users "Library" will be saved via ~~Redis~~ NeDB and will be deleted within 24 hours.
 - Secrets will be saved via a .env file since this the goodreads API is free and won't cause harm to me if something happens.
 - As per Goodreads Tos I'll need to display the GoodReads logo/name where ever the data is used.
 - Hosting will be on Heroku
@@ -24,12 +24,12 @@
 - Parse query results
 - Display search results on search page
 - Add Goodreads logo to search results page
-- Research Redis
-- Save user selection to Redis - POST
+- Research ~~Redis~~ NeDB
+- Save user selection to ~~Redis~~ NeDB - POST
 - Book library page and route
 - Show book list - GET
-- Add a tag to a book, update Redis - PUT
-- Delete book, update Redis - DELETE
+- Add a tag to a book, update ~~Redis~~ NeDB - PUT
+- Delete book, update ~~Redis~~ NeDB - DELETE
 - Create background image with Canvas module
 - Migrate to Heroku
 

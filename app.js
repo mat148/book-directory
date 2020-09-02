@@ -22,11 +22,6 @@ app.get('/', (req, res)=> {
 });
 
 //SEARCH
-app.get('/search', (req, res)=>{
-    res.render('search', {data : { goodReadsResponse : 'text', searchQuery : 'searchQuery' }});
-    res.end();
-});
-
 app.post('/search', (req, res)=>{
     const searchQuery = req.body.searchQuery;
     const cleanQuery = encodeURI(searchQuery);
