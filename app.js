@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const xml2js = require('xml2js');
 const dotenv = require('dotenv');
 
+const fetch = require('node-fetch');
+
 dotenv.config();
 const app = express();
 const port = process.env.PORT || "3000";
@@ -21,25 +23,30 @@ app.get('/', (req, res)=> {
     res.render('homepage');
 });
 
-//SEARCH
-app.post('/search', (req, res)=>{
-    const searchQuery = req.body.searchQuery;
-    const cleanQuery = encodeURI(searchQuery);
+//Search
+app.get('/search', async (req, res) => {
+    const query = req.query.searchQuery;
 
-    axios.get( goodreadsapi + '?key=' + goodreadskey + '&q=' + cleanQuery ).then(response => {
-        xml2js.parseString(response.data, (error, result)=> {
-            var test = result.GoodreadsResponse.search[0].results[0].work.map( w => {
-                let bestBook = w.best_book[0];
-                return {title: bestBook.title[0]}
+    const fetch_response = async (url, query) => {
+        try {
+            const response = await fetch(url);
+            const xml = await response.text();
+
+            xml2js.parseString(xml, (error, result) => {
+                var test = result.GoodreadsResponse.search[0].results[0].work.map( w => {
+                    let bestBook = w.best_book[0];
+                    return {title: bestBook.title[0]}
+                });
+
+                res.render('search', {data : { goodReadsResponse : test, searchQuery : query }});
+                res.end();
             });
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-            res.render('search', {data : { goodReadsResponse : test, searchQuery : searchQuery }});
-            res.end();
-        });
-
-    }).catch(error => {
-        console.log(error);
-    });
+    fetch_response(goodreadsapi + '?key=' + goodreadskey + '&q=' + query + '&page=1', query);
 });
 
 app.listen(port, ()=>{

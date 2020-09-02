@@ -2,6 +2,8 @@
     <body>
         <h1>You searched for: <%= data.searchQuery %></h1>
         <p>
+            <%= data.goodReadsResponse %>
+
             <% data.goodReadsResponse.forEach(function(book) { %>
                 <li><%= book.title %></li>
             <% }); %>
