@@ -2,7 +2,9 @@ const express = require('express');
 const path = require('path');
 const axios = require('axios');
 const bodyParser = require('body-parser');
-require('body-parser-xml')(bodyParser);
+const convert = require('xml-js');
+const xml2js = require('xml2js');
+//require('body-parser-xml')(bodyParser);
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -15,7 +17,6 @@ const goodreadskey = process.env.goodreadskey;
 app.use('/public', express.static(path.join(__dirname, '../static')));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.xml());
 
 //HOME
 app.get('/', (req, res)=> {
@@ -24,20 +25,39 @@ app.get('/', (req, res)=> {
 
 //SEARCH
 app.get('/search', (req, res)=>{
-    res.render('search');
+    res.render('search', {data : { goodReadsResponse : 'text', searchQuery : 'searchQuery' }});
+    res.end();
     //getQuery(req.query.query);
 });
 
 app.post('/search', (req, res)=>{
     const searchQuery = req.body.searchQuery;
-    const goodReadsXML = getQuery(searchQuery);
-    res.sendFile(goodReadsXML);
+    const cleanQuery = encodeURI(searchQuery);
+    //const goodReadsXML = getQuery(searchQuery);
+    //res.sendFile(goodReadsXML);
 
-    goodReadsXML.then(function(result) {
-        //console.log(req);
-        res.render('search', {data : { goodReadsResponse : result, searchQuery : searchQuery }});
-        //console.log(req.body);
-        res.end();
+    axios.get( goodreadsapi + '?key=' + goodreadskey + '&q=' + cleanQuery ).then(response => {
+
+        /*var result = convert.xml2js(response.data, {compact: false, spaces: 4});
+        let temp = result.elements.map( e => {
+            return e.elements.filter( f => {
+                return f.name == 'Request';
+            });
+        });
+        console.log(temp[0][0].elements);*/
+
+        xml2js.parseString(response.data, (error, result)=> {
+            var test = result.GoodreadsResponse.search[0].results[0].work.map( w => {
+                let bestBook = w.best_book[0];
+                return {title: bestBook.title[0]}
+            });
+
+            res.render('search', {data : { goodReadsResponse : test, searchQuery : searchQuery }});
+            res.end();
+        });
+
+    }).catch(error => {
+        console.log(error);
     });
     //console.log(getQuery(searchQuery));
     //console.log(searchQuery);
@@ -62,7 +82,7 @@ app.listen(port, ()=>{
     console.log(`Listening to requests on http://localhost:${port}`);
 });
 
-const getQuery = function(query) {
+/*const getQuery = function(query) {
     //console.log(query);
     //console.log( process.env.goodreadskey );
     //https://www.goodreads.com/search/index.xml?key=b0L0YkqXxrPPmyhgKSJhLw&q=Test
@@ -75,4 +95,4 @@ const getQuery = function(query) {
     }).catch(error => {
         console.log(error);
     });
-}
+}*/
