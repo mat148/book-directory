@@ -18,14 +18,15 @@ app.use('/public', express.static(path.join(__dirname, '../static')));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//HOME
+//Home
 app.get('/', (req, res)=> {
     res.render('homepage');
 });
 
 let totalResults = 0;
 let resultsEnd = 0;
-let numberOfPaginations = 0;
+let totalLoad = 0;
+let currentPage = 0;
 
 //Search
 app.get('/search', async (req, res) => {
@@ -41,7 +42,10 @@ app.get('/search', async (req, res) => {
                 var paginations = result.GoodreadsResponse.search[0];
                 totalResults = paginations['total-results'];
                 resultsEnd = paginations['results-end'];
-                numberOfPaginations = totalResults / resultsEnd;
+
+                totalLoad = totalResults;
+
+                console.log(result.GoodreadsResponse.search[0]);
 
                 var test = result.GoodreadsResponse.search[0].results[0].work.map( w => {
                     let bestBook = w.best_book[0];
@@ -54,7 +58,12 @@ app.get('/search', async (req, res) => {
                     }
                 });
 
-                res.render('search', {data : { goodReadsResponse : test, searchQuery : query}});
+                res.render('search', {data : {
+                    goodReadsResponse : test, 
+                    searchQuery : query, 
+                    totalResults : totalResults,
+                    totalLoad : totalLoad,
+                }});
                 res.end();
             });
         } catch (error) {
@@ -62,7 +71,12 @@ app.get('/search', async (req, res) => {
         }
     };
 
-    fetch_response(goodreadsapi + '?key=' + goodreadskey + '&q=' + query + '&page=0', query);
+    fetch_response(goodreadsapi + '?key=' + goodreadskey + '&q=' + query + '&page=' + currentPage);
+});
+
+//Load More Books
+app.get('/loadmorebooks', async (req, res)=> {
+    
 });
 
 app.listen(port, ()=>{
