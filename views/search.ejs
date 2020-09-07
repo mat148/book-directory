@@ -6,8 +6,9 @@
         <h1>You searched for: <%= data.searchQuery %></h1>
 
         <% if(data.goodReadsResponse) { %>
-            <ul>
+            <ul class="data-container">
                 <%= data.totalResults %>
+                <%= data.currentPage %>
                 <% data.goodReadsResponse.forEach(function(book) { %>
                     <li>
                         <span><%= book.title %></span>
@@ -18,7 +19,7 @@
                     </li>
                 <% }); %>
             </ul>
-            <% if(data.totalLoad >= data.totalResults) { %>
+            <% if(data.resultsEnd <= data.totalResults) { %>
                 <div class="load-more__container">
                     <button class="load-more__button" type="button">Load More</button>
                 </div>
@@ -27,11 +28,52 @@
     </body>
 
     <script type="text/javascript">
-        const loadMore = document.querySelector('.load-more__button');
+        window.addEventListener('load', function() {
+            const API_URL = 'http://localhost:3000/loadmorebooks';
+            const loadMore = document.querySelector('.load-more__button');
+            const dataContainer = document.querySelector('.data-container');
 
-        loadMore.addEventListener('click', (event) => {
-            event.preventDefault('Load More');
-            //console.log('load more');
+            //var currentPage = <%- JSON.stringify(data.currentPage) %>;
+            //var searchQuery = <%- JSON.stringify(data.searchQuery) %>;
+            /*const currentPageObj = {
+                'searchQuery' : searchQuery,
+                'currentPage' : currentPage
+            }
+            console.log(currentPage);*/
+
+            if(loadMore) {
+                loadMore.addEventListener('click', (event) => {
+                    event.preventDefault('Load More');
+                    
+                    fetch(API_URL, {
+                        method : 'POST',
+                        //body : JSON.stringify(currentPageObj),
+                        /*headers : {
+                            'content-type' : 'application/json'
+                        }*/
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.data);
+                        //const html = [];
+                        //const parentElement = document.createElement('li');
+                        //const childElement = document.createElement('span');
+                        data.data.goodReadsResponse.forEach(element => {
+                            const childElement = document.createElement('li');
+
+                            const childTitle = document.createElement('span');
+                            childTitle.innerHTML = element.title;
+                            childElement.appendChild(childTitle);
+
+                            const childAuthor = document.createElement('span');
+                            childAuthor.innerHTML = element.author[0];
+                            childElement.appendChild(childAuthor);
+
+                            dataContainer.appendChild(childElement);
+                        });
+                    });
+                });
+            }
         });
     </script>
 
