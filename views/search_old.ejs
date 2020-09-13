@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" />
+    </head>
+    <body>
+        <h1>You searched for: <%= data.searchQuery %></h1>
+
+        <% if(data.goodReadsResponse) { %>
+            <ul class="data-container">
+                <%= data.totalResults %>
+                <%= data.currentPage %>
+                <% data.goodReadsResponse.forEach(function(book) { %>
+                    <li>
+                        <span><%= book.title %></span>
+                        <span><%= book.author %></span>
+                        <span><img src="<%= book.image_url %>"/></span>
+                        <span><img src="<%= book.small_image %>"/></span>
+                        <span><%= book.original_publication_year %></span>
+                    </li>
+                <% }); %>
+            </ul>
+            <% if(data.resultsEnd <= data.totalResults) { %>
+                <div class="load-more__container">
+                    <button class="load-more__button" type="button">Load More</button>
+                </div>
+            <% } %>
+        <% } %>
+    </body>
+
+    <script type="text/javascript">
+        window.addEventListener('load', function() {
+            const API_URL = 'http://localhost:3000/loadmorebooks';
+            const loadMore = document.querySelector('.load-more__button');
+            const dataContainer = document.querySelector('.data-container');
+
+            //var currentPage = <%- JSON.stringify(data.currentPage) %>;
+            //var searchQuery = <%- JSON.stringify(data.searchQuery) %>;
+            /*const currentPageObj = {
+                'searchQuery' : searchQuery,
+                'currentPage' : currentPage
+            }
+            console.log(currentPage);*/
+
+            if(loadMore) {
+                loadMore.addEventListener('click', (event) => {
+                    event.preventDefault('Load More');
+                    
+                    fetch(API_URL, {
+                        method : 'POST',
+                        //body : JSON.stringify(currentPageObj),
+                        /*headers : {
+                            'content-type' : 'application/json'
+                        }*/
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.data);
+                        //const html = [];
+                        //const parentElement = document.createElement('li');
+                        //const childElement = document.createElement('span');
+                        data.data.goodReadsResponse.forEach(element => {
+                            const childElement = document.createElement('li');
+
+                            const childTitle = document.createElement('span');
+                            childTitle.innerHTML = element.title;
+                            childElement.appendChild(childTitle);
+
+                            const childAuthor = document.createElement('span');
+                            childAuthor.innerHTML = element.author[0];
+                            childElement.appendChild(childAuthor);
+
+                            dataContainer.appendChild(childElement);
+                        });
+                    });
+                });
+            }
+        });
+    </script>
+
+    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.min.js"></script>
+
+    <script type="text/javascript">
+        $('#pagination-container').pagination({
+            dataSource: [1,2,3,4,5,6,7,8,9,10],
+            pageSize: 5,
+            totalNumber: 20,
+            callback: function(data, pagination) {
+                var html = template(data);
+                dataContainer.html(html);
+            }
+        });
+    </script>-->
+</html>
